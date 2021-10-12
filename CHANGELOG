@@ -1,0 +1,5 @@
+v1.0 :
+- Created UsbMount for WSL environments.
+- Simple "--help" command, executed when no options are supplied.
+- "-u" option to unmount.
+- Very simple (and dirty) command argument parser, that should be automated in the future.
