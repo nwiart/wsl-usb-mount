@@ -1,3 +1,9 @@
+v1.01 :
+- Reorganized code for better options management (parsing is partially automated).
+- Command-line options now respect POSIX conventions.
+- Added version print (using -V or --version).
+- All french messages have been translated.
+
 v1.0 :
 - Created UsbMount for WSL environments.
 - Simple "--help" command, executed when no options are supplied.
