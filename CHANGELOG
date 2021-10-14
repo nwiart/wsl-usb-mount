@@ -1,3 +1,8 @@
+v1.02 :
+- Added return code checks for `mount` and `umount` and error messages in case of failure.
+- Silenced command outputs (errors only).
+- Mount directory is now automatically removed on unmount.
+
 v1.01 :
 - Reorganized code for better options management (parsing is partially automated).
 - Command-line options now respect POSIX conventions.

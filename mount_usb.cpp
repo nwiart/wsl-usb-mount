@@ -14,7 +14,7 @@ using namespace std;
 
 
 
-#define VERSION "1.01"
+#define VERSION "1.02"
 
 #define LOGINFO( x ) cout << "[INFO]: "  << x << endl;
 #define LOGWARN( x ) cout << "[WARN]: "  << x << endl;
@@ -45,7 +45,7 @@ option options[] =
 };
 
 // Array of specified options.
-bool* specified_options = 0;
+bool specified_options[128];
 
 char to_lower( char c )
 {
@@ -146,20 +146,34 @@ int main( int argc, char** argv )
 		if ( is_specified( 'u' ) )
 		{
 			LOGINFO( "Unmount command issued." );
-			cmd += "umount /mnt/"; cmd += drive_letter;
+
+			cmd = "umount /mnt/"; cmd += drive_letter;
+			cmd += " 2> /dev/null";
+			if ( system( cmd.c_str() ) )
+			{
+				LOGWARN( "Drive " << drive_letter << ": is not mounted." );
+			}
+
+			system( (string("sudo rmdir /mnt/") + drive_letter + " 2> /dev/null").c_str() );
 		}
 		else
 		{
 			LOGINFO( "Mount command issued." );
 
 			// Make mount directory command.
-			cmd += "mkdir /mnt/"; cmd += drive_letter; cmd += "; ";
+			cmd = "mkdir /mnt/"; cmd += drive_letter;
+			cmd += " 2> /dev/null";
+			system( cmd.c_str() );
 
 			// Actual mount command.
-			cmd += "mount -t drvfs "; cmd += drive_letter; cmd += ": /mnt/"; cmd += drive_letter;
+			cmd = "mount -t drvfs "; cmd += drive_letter; cmd += ": /mnt/"; cmd += drive_letter;
+			cmd += " 2> /dev/null";
+			if ( system( cmd.c_str() ) )
+			{
+				LOGERR( "Mount failed. Perhaps no device is assigned to the letter " << drive_letter << ':' );
+				system( (string("sudo rmdir /mnt/" + drive_letter)).c_str() );
+			}
 		}
-
-		system( cmd.c_str() );
 	}
 	else
 	{
@@ -173,10 +187,7 @@ int main( int argc, char** argv )
 // Initializes the array of specified options.
 void init_options()
 {
-	unsigned int size = sizeof(options) / sizeof(option);
-
-	specified_options = (bool*) malloc( size );
-	memset( specified_options, 0, size );
+	memset( specified_options, 0, 128 );
 }
 
 // Returns whether an option was explicitely specified in the command line.
